@@ -24,6 +24,11 @@ S = "${WORKDIR}/git/iotconnect-sdk-1.0"
 inherit setuptools3
 
 #PYPI_PACKAGE = "iotconnect-sdk"
+RDEPENDS_${PN} += " python3-ntplib"
+RDEPENDS_${PN} += " python3-paho-mqtt"
+RDEPENDS_${PN} += " jsonlib-python3"
+RDEPENDS_${PN} += " python3-pip"
+
 
 do_configure () {
 	# Specify any needed configure commands here
