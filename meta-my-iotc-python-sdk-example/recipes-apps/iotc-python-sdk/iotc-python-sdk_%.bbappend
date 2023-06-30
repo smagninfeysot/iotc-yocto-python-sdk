@@ -1,11 +1,19 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}:"
 
-SRC_URI += "file://iotconnect-sdk-firmware-python-3.0.4.py"
+APP_INSTALL_DIR = "${D}${bindir}/iotc"
 
-FILES_${PN} += "${bindir}/iotconnect-sdk-firmware-python-3.0.4.py"
+SRC_URI += "file://files/iotconnect-sdk-1.0-firmware-python_msg-2_1.py"
+
+FILES_${PN} += "${bindir}/iotconnect-sdk-1.0-firmware-python_msg-2_1.py"
+
+SRC_URI += "file://files/test.py"
+SRC_URI += "file://files/models/device_model.py"
 
 # Create /usr/bin in rootfs and copy program to it
 do_install_append() {
-    install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/iotconnect-sdk-firmware-python-3.0.4.py ${D}${bindir}
+    install -d ${APP_INSTALL_DIR}
+    install -m 0755 ${WORKDIR}/files/iotconnect-sdk-1.0-firmware-python_msg-2_1.py ${APP_INSTALL_DIR}/
+    install -d ${APP_INSTALL_DIR}/models
+    install -m 0755 ${WORKDIR}/files/models/device_model.py ${APP_INSTALL_DIR}/models/
+    install -m 0755 ${WORKDIR}/files/test.py ${APP_INSTALL_DIR}/
 }
