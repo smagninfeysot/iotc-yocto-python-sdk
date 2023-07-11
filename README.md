@@ -6,11 +6,16 @@ There are 2 layers thus far: `meta-iotc-python-sdk` & `meta-my-iotc-python-sdk-e
 ### How to include layers
 To include the layers within a yocto enviroment:
 
-1. check them out to the `sources` directory in your yocto enviroment.
+1. check them out to the `sources` directory in your yocto enviroment. For example, when in the directory above `sources`:
+
+   ```
+   git clone --depth=1 https://github.com/avnet-iotconnect/iotc-yocto-python-sdk.git --branch=hardknott /tmp/tmpcheckout && \
+   mv /tmp/tmpcheckout/meta-* sources/ && \
+   rm -fr /tmp/tmpcheckout/
+   ```
 
 1. add them to `conf/bblayers` file in your build directory
-2. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
-
+1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
 1. build with a bitbake call e.g. `./bitbake iot-connect-image`
 
 ### Description of layers
