@@ -23,3 +23,5 @@ To include the layers within a yocto enviroment:
 Contains the git urls for checkouts, recipe definitions & additional python module requirements.
 #### meta-my-iotc-python-sdk-example
 It's expected that developers will have to provide bespoke elements for their application. This layer provides an example of how a user might specify custom requirements of an application within their layer that's then compiled & built for use: in this case the  specifics that need to be edited with the device credentials.
+
+## Board specific examples can be found [here](board_specific_readmes/README.md)
