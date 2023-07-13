@@ -68,15 +68,24 @@ clone iotc-yocto-c-sdk into `<basedir>/source`.
 
 Add both layers from iotc-yocto-python-sdk and iotc-yocto-c-sdk to the `bblayers.conf` file located in `build/01047/conf`
 
+add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
+
 modify `meta-my-iotc-python-sdk-example/recipes-apps/iotc-python-sdk/files/iotconnect-sdk-1.0-firmware-python_msg-2_1.py` with your `SId` (hint where to find it is in current value of that variable), `uniqueId` (that's the unique id on iotc device creation). You might also want to add `"devicePrivateKey"` field to `SdkOptions` structure (also see comments above that structure. private key must be the same you provided on device creation on iotc).
 
-modify `meta-my-iotc-python-sdk-example/recipes-apps/iotc-python-sdk/files/test.py` with same values you've entered in previous step and add additionally modify `cpid` and `end` values (hints in the current values).
 
 navigate to `build/01047` and use `bitbake iot-connect-image`
 
 After building make sure `iot-connect-image-sm2s-imx8mp.wic` is actually built
 
 #### Another image
+
+clone iotc-yocto-python-sdk into `<basedir>/source`.
+
+Add both layers from iotc-yocto-python-sdk to the `bblayers.conf` file located in `build/01047/conf`
+
+add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
+
+navigate to `build/01047` and build your needed image.
 
 ### Flashing
 
