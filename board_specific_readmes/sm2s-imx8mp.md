@@ -97,6 +97,8 @@ Once the layers have been integrated as per the instructions above & recipe iot-
 
 - ***Note:*** emmc_burn_all.lst and emmc_burn_loader.lst can be found in an Appendix section of *"App_Note_035_Using_NXP_Mfgtool+uuu"* document. files there contain some formatting as well as syntax problems not allowing to flash. However, they should be relatively easy to fix.
 
+***Note:*** commands below assume you've built iot-connect-image. If iotc-yocto-python-sdk was integrated into another image - use that wic file instead of iot-connect-image.
+
     ```
     sudo uuu -b emmc_burn_all.lst \
     <path-to>/imx-boot-sm2s-imx8mp-sd.bin-flash_evk \
@@ -110,7 +112,12 @@ Once the layers have been integrated as per the instructions above & recipe iot-
     ../../docker-msc-ldk/src/msc-ldk/build/01047/tmp/deploy/images/sm2s-imx8mp/imx-boot-sm2s-imx8mp-sd.bin-flash_evk \
     ../../docker-msc-ldk/src/msc-ldk/build/01047/tmp/deploy/images/sm2s-imx8mp/iot-connect-image-sm2s-imx8mp.wic
     ```
-On the target (via serial debug or ssh terminal (for serial debug please see Section 3.10 RS485 / RS232 (SER0) in *"MSC-SM2S-MB-EP5_User-Manual_DV3_V013"* )) execute `basic-sample`
+
+On the target (via serial debug or ssh terminal (for serial debug please see Section 3.10 RS485 / RS232 (SER0) in *"MSC-SM2S-MB-EP5_User-Manual_DV3_V013"* )).
+
+If using iot-conenct-image password is `root`
+
+Head to `/usr/bin/iotc/` and run either `python3 iotconnect-sdk-1.0-firmware-python_msg-2_1.py` or `python3 test.py`
 
 ## Appendix
 
@@ -141,3 +148,5 @@ Available from: https://embedded.avnet.com/product/msc-sm2s-imx8plus/#manual
 ### Testing
 
 ***Note***: Instructions mentioned above were tested on docker image of Ubuntu 18.04 in combination with Ubuntu 22.04.
+
+you can also use `test.py` located in `meta-my-iotc-python-sdk-example/recipes-apps/iotc-python-sdk/files/` to test connection to iotc.
