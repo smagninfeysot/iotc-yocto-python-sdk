@@ -22,12 +22,12 @@ from datetime import datetime
 import os
 
 """
-* ## Prerequisite parameter to run this sampel code
+* ## Prerequisite parameter to run this sample code
 * cpId         :: It need to get from the IoTConnect platform "Settings->Key Vault". 
 * uniqueId     :: Its device ID which register on IotConnect platform and also its status has Active and Acquired
 * env          :: It need to get from the IoTConnect platform "Settings->Key Vault". 
 * interval     :: send data frequency in seconds
-* sdkOptions   :: It helps to define the path of self signed and CA signed certificate as well as define the offlinne storage configuration.
+* sdkOptions   :: It helps to define the path of self signed and CA signed certificate as well as define the offline storage configuration.
 """
 
 SId = "<<your Settings > Key Vault > Language=\"Python **\" > Version = "1.0" > Identity here>>"
@@ -35,7 +35,7 @@ UniqueId = "<<your Device ID here>>"
 
 Sdk=None
 interval = 30
-directmethodlist={}
+directMethodList={}
 ACKdirect=[]
 device_list=[]
 """
@@ -69,7 +69,7 @@ SdkOptions={
         #"keepalive":60
     }
     #"skipValidation":False,
-	# As per your Environment(Azure or Azure EU or AWS) uncomment single URL and commnet("#") rest of URLs.
+	# As per your Environment(Azure or Azure EU or AWS) uncomment single URL and comment("#") rest of URLs.
     #"discoveryUrl":"https://eudiscovery.iotconnect.io", #Azure EU environment 
     #"discoveryUrl":"https://discovery.iotconnect.io", #Azure All Environment 
     #"discoveryUrl":"http://52.204.155.38:219", #AWS pre-QA Environment
@@ -108,10 +108,10 @@ def DeviceCallback(msg):
             #print(data)
             if "id" in data:
                 if "ack" in data and data["ack"]:
-                    Sdk.sendAckCmd(data["ack"],7,"sucessfull",data["id"])  #fail=4,executed= 5,sucess=7,6=executedack
+                    Sdk.sendAckCmd(data["ack"],7,"successful",data["id"])  #fail=4,executed= 5,sucess=7,6=executedack
             else:
                 if "ack" in data and data["ack"]:
-                    Sdk.sendAckCmd(data["ack"],7,"sucessfull") #fail=4,executed= 5,sucess=7,6=executedack
+                    Sdk.sendAckCmd(data["ack"],7,"successful") #fail=4,executed= 5,sucess=7,6=executedack
     else:
         print("rule command",msg)
 
@@ -141,11 +141,11 @@ def DeviceFirmwareCallback(msg):
                     if "tg" in url_list:
                         for i in device_list:
                             if "tg" in i and (i["tg"] == url_list["tg"]):
-                                Sdk.sendOTAAckCmd(data["ack"],0,"sucessfull",i["id"]) #Success=0, Failed = 1, Executed/DownloadingInProgress=2, Executed/DownloadDone=3, Failed/DownloadFailed=4
+                                Sdk.sendOTAAckCmd(data["ack"],0,"successful",i["id"]) #Success=0, Failed = 1, Executed/DownloadingInProgress=2, Executed/DownloadDone=3, Failed/DownloadFailed=4
                     else:
-                        Sdk.sendOTAAckCmd(data["ack"],0,"sucessfull") #Success=0, Failed = 1, Executed/DownloadingInProgress=2, Executed/DownloadDone=3, Failed/DownloadFailed=4
+                        Sdk.sendOTAAckCmd(data["ack"],0,"successful") #Success=0, Failed = 1, Executed/DownloadingInProgress=2, Executed/DownloadDone=3, Failed/DownloadFailed=4
 
-def DeviceConectionCallback(msg):  
+def DeviceConnectionCallback(msg):  
     cmdType = None
     if msg != None and len(msg.items()) != 0:
         cmdType = msg["ct"] if msg["ct"] != None else None
@@ -160,7 +160,7 @@ def DeviceConectionCallback(msg):
  * Input   : Desired property "key" and Desired property "value"
  * Output  : 
 """
-# key = "<< Desired property key >>"; // Desired proeprty key received from Twin callback message
+# key = "<< Desired property key >>"; // Desired property key received from Twin callback message
 # value = "<< Desired Property value >>"; // Value of respective desired property
 # Sdk.UpdateTwin(key,value)
 
@@ -195,7 +195,7 @@ def DirectMethodCallback1(msg,methodname,rId):
     print(msg)
     print(methodname)
     print(rId)
-    data={"data":"succed"}
+    data={"data":"succeed"}
     #return data,200,rId
     ACKdirect.append({"data":data,"status":200,"reqId":rId})
     #Sdk.DirectMethodACK(data,200,rId)
@@ -242,11 +242,11 @@ def main():
 
         """
         * Type    : Object Initialization "IoTConnectSDK()"
-        * Usage   : To Initialize SDK and Device cinnection
+        * Usage   : To Initialize SDK and Device connection
         * Input   : cpId, uniqueId, sdkOptions, env as explained above and DeviceCallback and TwinUpdateCallback is callback functions
         * Output  : Callback methods for device command and twin properties
         """
-        with IoTConnectSDK(UniqueId,SId,SdkOptions,DeviceConectionCallback) as Sdk:
+        with IoTConnectSDK(UniqueId,SId,SdkOptions,DeviceConnectionCallback) as Sdk:
             try:
                 """
                 * Type    : Public Method "GetAllTwins()"
