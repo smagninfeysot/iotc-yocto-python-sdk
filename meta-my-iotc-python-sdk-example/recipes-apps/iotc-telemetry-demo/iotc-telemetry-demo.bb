@@ -3,16 +3,37 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec
 
 RDEPENDS_${PN} = "iotc-python-sdk iotc-telemetry-demo-service"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}:"
+SRC_URI = "file://telemetry_demo.py \
+    file://model \
+    file://eg-private-repo-data \
+"
 
-APP_INSTALL_DIR = "${D}${bindir}/iotc"
+APP_INSTALL_DIR = "${base_prefix}/usr/bin/local/iotc"
+PRIVATE_DATA_DIR = "${base_prefix}/usr/local/iotc"
 
-SRC_URI += "file://files/"
-FILES_${PN} += "${bindir}/*"
+FILES_${PN}-dev = "${PRIVATE_DATA_DIR}/* \
+"
 
-# Create /usr/bin in rootfs and copy program to it
-do_install_append() {
-    install -d ${APP_INSTALL_DIR}
-    cp -r --no-preserve=ownership ${WORKDIR}/files/* ${APP_INSTALL_DIR}/
-    install -m 0755 ${WORKDIR}/files/telemetry_demo.py ${APP_INSTALL_DIR}/
+do_install() {
+    install -d ${D}${APP_INSTALL_DIR}
+    for f in ${WORKDIR}/model/*
+    do
+        if [ -f $f ]; then
+            if [ ! -d ${D}${APP_INSTALL_DIR}/model ]; then
+                install -d ${D}${APP_INSTALL_DIR}/model
+            fi
+            install -m 0755 $f ${D}${APP_INSTALL_DIR}/model/
+        fi
+    done
+    install -m 0755 ${WORKDIR}/telemetry_demo.py ${D}${APP_INSTALL_DIR}/
+
+    for f in ${WORKDIR}/eg-private-repo-data/*
+    do
+        if [ -f $f ]; then
+            if [ ! -d ${D}${PRIVATE_DATA_DIR} ]; then
+                install -d ${D}${PRIVATE_DATA_DIR}
+            fi
+            install -m 0755 $f ${D}${PRIVATE_DATA_DIR}/
+        fi
+    done
 }

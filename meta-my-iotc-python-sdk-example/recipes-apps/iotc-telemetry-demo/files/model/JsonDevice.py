@@ -1,10 +1,9 @@
-#from models.device_model import *
-from DeviceModel import ConnectedDevice
+from model.DeviceModel import ConnectedDevice
 
-from JsonParser import parse_json_for_config, ToSDK
+from model.JsonParser import parse_json_for_config, ToSDK
 import struct
 
-from Enums import Enums as E
+from model.Enums import Enums as E
 
 class DynAttr:
 
