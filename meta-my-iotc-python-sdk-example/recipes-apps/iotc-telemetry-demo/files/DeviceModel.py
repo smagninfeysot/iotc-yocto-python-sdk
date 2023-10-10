@@ -138,22 +138,15 @@ class ConnectedDevice(GenericDevice):
         else:
             print("no client")
 
-    # Either OTA or Standard, exits early if not requested
     def send_ack(self, msg, status: E.Values.AckStat, message):
         # check if ack exists in message
         if E.get_value(msg, E.Keys.ack) is None:
-            print(" Ack not requested, returning")
+            print("Ack not requested, returning")
             return
         
         id_to_send = E.get_value(msg, E.Keys.id)
+        self.SdkClient.sendAckCmd(msg[E.Keys.ack], status, message, id_to_send)
 
-        if status.__class__ == E.Values.AckStat:
-            self.SdkClient.sendAckCmd(msg[E.Keys.ack], status, message, id_to_send)
-            return
-        
-        if status.__class__ == E.Values.OtaStat:
-            self.SdkClient.sendOTAAckCmd(msg[E.Keys.ack], status, message, id_to_send)
-            return
 
 class Gateway(ConnectedDevice):
     children = []
