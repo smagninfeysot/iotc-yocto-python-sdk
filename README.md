@@ -15,8 +15,10 @@ To include the layers within a yocto environment:
    ```
 
 1. add them to `conf/bblayers` file in your build directory
-1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-telemetry-demo"` to the bottom of `build/conf/local.conf`
+1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-telemetry-demo-dev"` to the bottom of `build/conf/local.conf`
 1. build with a bitbake call e.g. `./bitbake core-image-base`
+
+1. If you no longer require the sample credential examples replace `iotc-telemetry-demo-dev` with `iotc-telemetry-demo`
 
 ### Description of layers
 #### meta-iotc-python-sdk

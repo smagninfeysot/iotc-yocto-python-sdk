@@ -7,8 +7,9 @@
     "auth": {
         "auth_type": "IOTC_AT_X509",
             "params": {
-                "client_key": "/path/to/client-key.pem",
-                "client_cert": "/path/to/client.pem"
+                "client_key": "/path/to/device.key",
+                "client_cert": "/path/to/DeviceCertificate.pem",
+                "root_cert": "./aws_cert/root-CA.pem"
         }
     },
     "device": {
