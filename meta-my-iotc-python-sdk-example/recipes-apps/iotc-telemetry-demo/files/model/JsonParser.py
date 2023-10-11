@@ -18,6 +18,7 @@ class ToSDK:
         sdk_id = auto()
         sdk_options = auto()
         attributes = auto()
+        iotc_server_cert = auto()
 
     class Attributes(Enum):
         name = auto()
@@ -55,6 +56,7 @@ class FromJSON:
         sdk_id = "sdk_id"
         device = "device"
         sdk_ver = "sdk_ver"
+        iotc_server_cert = "iotc_server_cert"
 
     class Auth:
         """Human readable Enum for to mapping credential's auth object json format, including subclasses"""
@@ -66,7 +68,6 @@ class FromJSON:
             class Children:
                 client_key = "client_key"
                 client_cert = "client_cert"
-                root_cert = "root_cert"
 
         class Symmetric:
             name = "IOTC_AT_SYMMETRIC_KEY"
@@ -111,6 +112,7 @@ def parse_json_for_config(path_to_json) -> dict:
     c[ToSDK.Credentials.unique_id] = get(j, FromJSON.Keys.unique_id)
     c[ToSDK.Credentials.environment] = get(j, FromJSON.Keys.environment)
     c[ToSDK.Credentials.sdk_id] = get(j, FromJSON.Keys.sdk_id)
+    c[ToSDK.Credentials.iotc_server_cert] = get(j, FromJSON.Keys.iotc_server_cert)
 
     c[ToSDK.Credentials.sdk_options] = get_sdk_options(j)
     c[ToSDK.Credentials.attributes] = parse_device_attributes(j)
@@ -177,7 +179,7 @@ def parse_auth(j: json):
         child: dict[str] = {}
         get_and_assign(params_o,child, FromJSON.Auth.X509.Children.client_key, ToSDK.SdkOptions.Certificate.Children.key_path)
         get_and_assign(params_o,child, FromJSON.Auth.X509.Children.client_cert, ToSDK.SdkOptions.Certificate.Children.cert_path)
-        get_and_assign(params_o,child, FromJSON.Auth.X509.Children.root_cert, ToSDK.SdkOptions.Certificate.Children.root_cert_path)
+        get_and_assign(j,child, FromJSON.Keys.iotc_server_cert, ToSDK.SdkOptions.Certificate.Children.root_cert_path)
         temp[ToSDK.SdkOptions.Certificate.name] = child
 
     elif auth_type == FromJSON.Auth.Token.name:

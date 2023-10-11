@@ -3,14 +3,16 @@
     "duid": "Your Device's name in https://avnet.iotconnect.io/device/1",
     "cpid": "'CPID' from https://avnet.iotconnect.io/key-vault",
     "env": "'Environment' from https://avnet.iotconnect.io/key-vault",
+    "iotc_server_cert": "/etc/ssl/certs/DigiCert_Global_Root_G2.pem",
     "sdk_id": "'SDK Identities -> Language: Python **, Version: 1.0' from https://avnet.iotconnect.io/key-vault",
     "auth": {
         "auth_type": "IOTC_AT_SYMMETRIC_KEY",
-        "params": {
-            "primary_key": "From the IoTConnect UI portal 'Device -> Select device -> info(Tab) -> Connection Info -> Device Connection'"
+            "params": {
+                "primary_key": "From the IoTConnect UI portal 'Device -> Select device -> info(Tab) -> Connection Info -> Device Connection'"
         }
     },
     "device": {
+        "commands_list_path": "Path to folder containing all commands",
         "offline_storage": {
             "available_space_MB": 1,
             "file_count": 1
