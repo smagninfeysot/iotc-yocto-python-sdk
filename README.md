@@ -107,7 +107,38 @@ By editing these members you should be able to send data from your device to avn
 }
 ```
 
-The sample JSON contains key value pairs where the value contains directions to what your individual value will be. E.g:
+Say you have a device `my-demo-device` based on a template on avnet.iotconnect.io that looks like:
+```json
+{
+  "code": "my-template",
+  "name": "My Template",
+  "authType": 5,
+  "isIotEdgeEnable": false,
+  "attributes": [
+    {
+      "name": "Version",
+      "type": "STRING",
+      "description": null,
+      "unit": null
+    }
+  ],
+  "commands": [
+  ],
+  "messageVersion": "1.0",
+  "msgCode": "7LIBCD6",
+  "properties": {
+    "description": null,
+    "dataFrequency": "60",
+    "fileSupport": false
+  },
+  "_meta": {
+    "version": "2.0"
+  }
+}
+```
+
+You would first (copy &) edit config.json with relevant device connection details thusly:
+
 ```json
 {
     "sdk_ver": "2.1",
@@ -118,6 +149,16 @@ Would become:
 {
     "sdk_ver": "2.1",
     "duid": "myDemoDevice",
+```
+
+Then with regard to mapping template attributes to paths, in order to map the `Version` attribute to a path on the device you would edit config.json to include:
+```json
+      "attributes": [
+        {
+          "name": "Version",
+          "private_data": "/proc/version",
+          "private_data_type": "ascii"
+        },
 ```
 </details>
 
