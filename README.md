@@ -1,30 +1,137 @@
-# iotc-yocto-python-sdk
+# IoT-Connect Yocto C SDK
+***This IoT-Connect connect layer only supports `hardknott`***
+
 *The following details yocto layers designed to integrate the [iotc Python SDK]([https://github.com/avnet-iotconnect/iotc-python-sdk/tree/master-std-21]). The end result is an image with the SDK repo & a couple of sample python scripts installed. Once said image is flashed to a target, the sample scripts should successfully run & establish comms with an appropriately setup device on https://avnet.iotconnect.io/*
 
 ## Layers
 There are 2 layers thus far: `meta-iotc-python-sdk` & `meta-my-iotc-python-sdk-example`.
+### `meta-iotc-python-sdk`
+This layer draws in the various sources required to utilise the SDK. From a yocto perspective it largely serves to install the python SDK as a module into the image.
+
+```
+iotc-yocto-python-sdk$ tree meta-iotc-python-sdk/
+meta-iotc-python-sdk/
+├── conf
+│   └── layer.conf
+└── recipes-apps
+    └── iotc-python-sdk
+        ├── iotc-python-sdk_0.1.bb
+        └── jsonlib-python3_1.6.1.bb
+```
+
+### `meta-my-iotc-python-sdk-example`
+This layer provides an example of how a user might write a recipe suitable for their application. It contains a simple application that demonstrates telemetry. Once installed on the image it can be started by logging in & executing `/usr/bin/local/iotc/telemetry-demo.py /path/to/config.json` where `config.json` is a file that contains device authentication information and paths to where telemetry-demo will read data from on the host device. It's expected that in the 1st instance a user would run this demo on their hardware after editing a sample `config.json` to reflect a device they've defined on avnet.iotconnect.io and sensor data particular to their hardware.
+
+By adding the recipe to your image (e.g. `IMAGE_INSTALL += " iotc-telemetry-demo"` in `conf/local.conf`) you will via dependancy include `iotc-python-sdk` from `meta-iotc-python-sdk`
+
+```
+iotc-yocto-python-sdk$ tree meta-my-iotc-python-sdk-example/
+meta-my-iotc-python-sdk-example/
+├── conf
+│   └── layer.conf
+├── recipes-apps
+│   └── iotc-telemetry-demo <------------------ Recipe directory
+│       ├── files
+│       │   ├── eg-private-repo-data <--------- Location for certificates/keys & other config data for development purposes.
+│       │   ├── model <------------------------ directory of support sources
+│       │   │   ├── DeviceModel.py
+│       │   │   ├── Enums.py
+│       │   │   ├── JsonDevice.py
+│       │   │   └── JsonParser.py
+│       │   └── telemetry_demo.py <------------ top level python source.
+│       └── iotc-telemetry-demo_0.1.bb <------- Recipe
+└── recipes-systemd
+    └── iotc-telemetry-demo-service <---------- Example of a systemd service designed to start telemtry on boot (disabled by default)
+        ├── files
+        │   └── iotc-telemetry-demo.service
+        └── iotc-telemetry-demo-service_git.bb
+```
+
+As developing a iotc application involves the use of private/secure data like keys/certificates and the user is expected to develop same application using SCM like git, it's worth taking a moment to be aware of risks of accidentlally uploading private data to places it should not belong. The directory `eg-priviate-repo-data` seeks to provide a safe space to place sensitive data like device keys etc for development purposes only. When the user installs the _development_ version of the recipe (e.g. `IMAGE_INSTALL += " iotc-telemetry-demo-dev"` in `conf/local.conf`) any files within `eg-private-repo-data` will be installed in the rootfs of the image. The `.gitignore` settings for this repo are also configured to prevent accidental upload of *.pem or *.crt files.
+
+This approach allows the user to develop their solution conveniently, then when it's time to provide production builds, the result would be a clean installation awaiting first time configuration post image flash.
+
+## Configuration JSONs
+One schema for a commerical iotc solution that uses a fleet of devices would be a single set of binaries that use individual config files to implement individual devices. This telemetry demo illustrate one way the user might achieve this.
+
+In `eg-private-repo-data` are sample JSON files, these are explained in more detail in the drop-down section below. In summary:
+
+By editing the `duid`, `cpid`, `env`, `sdk_id` and `auth` members of a config.json, the bainary should have all the info required to successfully establish a connection to avnet.iotconnect.io as your device with no code edits required.
+
+Within config.json there is an object called `device` which has a child called `attributes`. Inside is an array of attributes, the names are derived from the Device Template's attributes in avnet.iotconnect.io, the names must match for data to be correctly sent to the right place.
+
+`private_data` is a path to the data on the device that is sent to the cloud.
+
+`private_data_type` allows you to read the file in either `ascii` or `binary` mode, though `ascii` is recommended.
+
+By editing these members you should be able to send data from your device to avnet.iotconnect.io again with no edits. (You may need to get your sensor data into a file, or it may already be in that form).
+
+<details>
+  <summary>JSON config files</summary>
+  The config json provides a quick and easy way to provide a user's executable with the requisite device credentials for any connection and a convenient method of mapping sensors to iotc device attributes. The demo source provided will match an `attribute.name` to a path on the user's host where the relevant sensor data resides. It also indicates to the demo what format to expect the data at the path to be in.
+
+```json
+{
+    "sdk_ver": "2.1",
+    "duid": "Your Device's name in https://avnet.iotconnect.io/device/1",
+    "cpid": "'CPID' from https://avnet.iotconnect.io/key-vault",
+    "env": "'Environment' from https://avnet.iotconnect.io/key-vault",
+    "iotc_server_cert": "/etc/ssl/certs/DigiCert_Global_Root_G2.pem",
+    "sdk_id": "'SDK Identities -> Language: Python **, Version: 1.0' from https://avnet.iotconnect.io/key-vault",
+    "auth": {
+      "auth_type": "IOTC_AT_X509",
+      "params": {
+        "client_key": "/path/to/device.key",
+        "client_cert": "/path/to/DeviceCertificate.pem"
+      }
+    },
+    "device": {
+      "commands_list_path": "Path to folder containing all commands",
+      "offline_storage": {
+        "available_space_MB": 1,
+        "file_count": 1
+      },
+      "attributes": [
+        {
+          "name": "power",
+          "private_data": "/usr/bin/local/iotc/dummy_sensor_power",
+          "private_data_type": "ascii"
+        },
+        {
+          "name": "level",
+          "private_data": "/usr/bin/local/iotc/dummy_sensor_level",
+          "private_data_type": "ascii"
+        }
+      ]
+    }
+}
+```
+
+The sample JSON contains key value pairs where the value contains directions to what your individual value will be. E.g:
+```json
+{
+    "sdk_ver": "2.1",
+    "duid": "Your Device's name in https://avnet.iotconnect.io/device/1",
+```
+Would become: 
+```json
+{
+    "sdk_ver": "2.1",
+    "duid": "myDemoDevice",
+```
+</details>
+
 ### How to include layers
 To include the layers within a yocto environment:
 
-1. check them out to the `sources` directory in your yocto environment. For example, when in the directory above `sources`:
-
-   ```
-   git clone --depth=1 https://github.com/avnet-iotconnect/iotc-yocto-python-sdk.git --branch=hardknott /tmp/tmpcheckout && \
-   mv /tmp/tmpcheckout/meta-* sources/ && \
-   rm -fr /tmp/tmpcheckout/
-   ```
-
+1. check them out to the `sources` directory in your yocto environment. 
 1. add them to `conf/bblayers` file in your build directory
 1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-telemetry-demo-dev"` to the bottom of `build/conf/local.conf`
+1. using the config.json files in `eg-private-repo-data` as a template, create your own config.json with details of the device you have setup on iotconnect.io.
+1. editing the same json as in the last step, edit the `attributes` section of the JSON so the `name` of the attritube maps to a path on your system where the relevant data can be found e.g. the path to the position data of an I2C accelerometer might be: `/sys/bus/i2c/devices/1-0053/position`.
 1. build with a bitbake call e.g. `./bitbake core-image-base`
-
-1. If you no longer require the sample credential examples replace `iotc-telemetry-demo-dev` with `iotc-telemetry-demo`
-
-### Description of layers
-#### meta-iotc-python-sdk
-Contains the git urls for checkouts, recipe definitions & additional python module requirements.
-#### meta-my-iotc-python-sdk-example
-It's expected that developers will have to provide bespoke elements for their application. This layer provides an example of how a user might specify custom requirements of an application within their layer that's then compiled & built for use: in this case the  specifics that need to be edited with the device credentials.
+1. Flash the resultant image to the device.
+1. Login into the device & run the command `/usr/bin/local/iotc/telemetry-demo.py /usr/local/iotc/config.json`
 
 ## Board specific examples can be found [here](board_specific_readmes/README.md)
 
@@ -35,19 +142,6 @@ It's expected that developers will have to provide bespoke elements for their ap
    Included is a Python demo of the SDK using DeviceModels and JSON configurable attributes and device credentials
    `credentials.json` is used to send the connection device credentials of the device, allowing flexibility without hardcoding such data.
 
-   Inside the file there is a JSON object called `device`, which has a child object called `attributes`, inside the `attributes` object is an array of attributes, the names are derived from the Device Template's attributes in avnet.iotconnect.io, the names must match for data to be correctly sent to the right place.
-
-   `private_data` is a path to the data on the device that is sent to the cloud.
-
-   `private_data_type` allows you to read the file in either `ascii` or `binary` mode, though `ascii` is recommended.
 
    This demo is designed to showcase a simple means of how "sensor data" can be sent from device to the cloud with minimal input from the developer, simply create attributes in the Device Template on the cloud dashboard and then add each attribute to the JSON and provide the path where the data lives.
    Once that is done then running `telemetry-demo.py` will send that data to the cloud.  
-
-   For this demo, two dummy sensor files have been provided, these are static and do not change but can be manually changed
-   they are `dummy_sensor_level` and `dummy_sensor_power`
-
-   ## Usage
-   1. with a serial console, navigate to `/usr/bin/iotc`
-   2. use `nano` or `vi` to modify `credentials.json` with your device credentials
-   3. launch the application with `./telemetry-demo.py credentials.json`
