@@ -134,14 +134,3 @@ To include the layers within a yocto environment:
 1. Login into the device & run the command `/usr/bin/local/iotc/telemetry-demo.py /usr/local/iotc/config.json`
 
 ## Board specific examples can be found [here](board_specific_readmes/README.md)
-
-# Telemetry Demo
-
-   All of the Demo code will be inside the `/usr/bin/iotc` directory.
-
-   Included is a Python demo of the SDK using DeviceModels and JSON configurable attributes and device credentials
-   `credentials.json` is used to send the connection device credentials of the device, allowing flexibility without hardcoding such data.
-
-
-   This demo is designed to showcase a simple means of how "sensor data" can be sent from device to the cloud with minimal input from the developer, simply create attributes in the Device Template on the cloud dashboard and then add each attribute to the JSON and provide the path where the data lives.
-   Once that is done then running `telemetry-demo.py` will send that data to the cloud.  
