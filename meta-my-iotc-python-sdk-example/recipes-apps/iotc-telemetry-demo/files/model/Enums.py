@@ -1,6 +1,5 @@
 '''
-    Converting from iotconnect SDK's dictionary types to a more useful enum
-    Benefit of it is that we can rename the enums to a more verbose and user friendly standard
+    Converts SDK's dictionary types for readability
 '''
 from typing import Union # to use Union[str, None] type hint
 from iotconnect.IoTConnectSDK import MSGTYPE,ErorCode,CMDTYPE,OPTION
