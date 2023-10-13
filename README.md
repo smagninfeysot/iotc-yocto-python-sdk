@@ -52,11 +52,11 @@ As developing a iotc application involves the use of private/secure data like ke
 This approach allows the user to develop their solution conveniently, then when it's time to provide production builds, the result would be a clean installation awaiting first time configuration post image flash.
 
 ## Configuration JSONs
-One schema for a commerical iotc solution that uses a fleet of devices would be a single set of binaries that use individual config files to implement individual devices. This telemetry demo illustrate one way the user might achieve this.
+One schema for a commerical iotc solution that uses a fleet of devices would be a single set of binaries that use individual config files to implement individual devices. This telemetry demo illustrates one way the user might achieve this.
 
 In `eg-private-repo-data` are sample JSON files, these are explained in more detail in the drop-down section below. In summary:
 
-By editing the `duid`, `cpid`, `env`, `sdk_id` and `auth` members of a config.json, the bainary should have all the info required to successfully establish a connection to avnet.iotconnect.io as your device with no code edits required.
+By editing the `duid`, `cpid`, `env`, `sdk_id` and `auth` members of a config.json, the binary should have all the info required to successfully establish a connection to avnet.iotconnect.io with no code edits.
 
 Within config.json there is an object called `device` which has a child called `attributes`. Inside is an array of attributes, the names are derived from the Device Template's attributes in avnet.iotconnect.io, the names must match for data to be correctly sent to the right place.
 
@@ -67,7 +67,7 @@ Within config.json there is an object called `device` which has a child called `
 By editing these members you should be able to send data from your device to avnet.iotconnect.io again with no edits. (You may need to get your sensor data into a file, or it may already be in that form).
 
 <details>
-  <summary>JSON config files</summary>
+  <summary>JSON Config More Info</summary>
   The config json provides a quick and easy way to provide a user's executable with the requisite device credentials for any connection and a convenient method of mapping sensors to iotc device attributes. The demo source provided will match an `attribute.name` to a path on the user's host where the relevant sensor data resides. It also indicates to the demo what format to expect the data at the path to be in.
 
 ```json
