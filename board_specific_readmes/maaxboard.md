@@ -93,7 +93,7 @@ From the `imx-yocto-bsp/maaxboard/build` directory (which you should be in from 
 
 1. Add the IoTConnect Python SDK to `build/conf/local` image
 ```bash
-   echo -e '\nIMAGE_INSTALL += " iotc-python-sdk"' >> maaxboard/build/conf/local.conf 
+   echo -e '\nIMAGE_INSTALL += " iotc-telemetry-demo"' >> maaxboard/build/conf/local.conf 
 ```
 1. build!
    ```bash
