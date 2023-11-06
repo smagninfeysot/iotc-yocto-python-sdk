@@ -1,7 +1,7 @@
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec6d293b95dea7b07891"
 
-RDEPENDS_${PN} = "iotc-python-sdk iotc-telemetry-demo-service"
+RDEPENDS_${PN} = "iotc-python-sdk"
 
 SRC_URI = "file://telemetry_demo.py \
     file://model \
@@ -36,4 +36,21 @@ do_install() {
             install -m 0755 $f ${D}${PRIVATE_DATA_DIR}/
         fi
     done
+}
+
+# systemd component, installs only if systemd is part of image
+
+inherit systemd
+SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_SERVICE_${PN} = "iotc-telemetry-demo.service"
+
+SRC_URI_append = " file://iotc-telemetry-demo.service "
+FILES_${PN} += "${systemd_unitdir}/system/iotc-telemetry-demo.service"
+
+HAS_SYSTEMD = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}"
+do_install_append() {
+    if ${HAS_SYSTEMD}; then
+        install -d ${D}/${systemd_unitdir}/system
+        install -m 0644 ${WORKDIR}/iotc-telemetry-demo.service ${D}/${systemd_unitdir}/system
+    fi
 }
