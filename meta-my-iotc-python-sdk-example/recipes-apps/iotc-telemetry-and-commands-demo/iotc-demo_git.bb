@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec
 
 RDEPENDS_${PN} = "iotc-python-sdk bash"
 
-SRC_URI = "file://telemetry_demo.py \
+SRC_URI = "file://iotc-demo.py \
     file://model \
     file://eg-private-repo-data \
     file://scripts \
@@ -51,7 +51,7 @@ do_install() {
     done
 
     # Install main app
-    install -m 0755 ${WORKDIR}/telemetry_demo.py ${D}${APP_INSTALL_DIR}/
+    install -m 0755 ${WORKDIR}/iotc-demo.py ${D}${APP_INSTALL_DIR}/
 
     for f in ${WORKDIR}/eg-private-repo-data/*
     do
@@ -73,15 +73,15 @@ do_install() {
 
 inherit systemd
 SYSTEMD_AUTO_ENABLE = "disable"
-SYSTEMD_SERVICE_${PN} = "iotc-telemetry-demo.service"
+SYSTEMD_SERVICE_${PN} = "iotc-demo.service"
 
-SRC_URI_append = " file://iotc-telemetry-demo.service "
-FILES_${PN} += "${systemd_unitdir}/system/iotc-telemetry-demo.service"
+SRC_URI_append = " file://iotc-demo.service "
+FILES_${PN} += "${systemd_unitdir}/system/iotc-demo.service"
 
 HAS_SYSTEMD = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}"
 do_install_append() {
     if ${HAS_SYSTEMD}; then
         install -d ${D}/${systemd_unitdir}/system
-        install -m 0644 ${WORKDIR}/iotc-telemetry-demo.service ${D}/${systemd_unitdir}/system
+        install -m 0644 ${WORKDIR}/iotc-demo.service ${D}/${systemd_unitdir}/system
     fi
 }
