@@ -32,7 +32,7 @@ echo -e 'VIRTUAL-RUNTIME_initscripts = " systemd-compat-units"\n' >> ./conf/loca
 
 # Add minimal required image changes
 # REPLACE iotc-python-sdk WITH WHAT YOU NEED
-echo -e '\nIMAGE_INSTALL += " iotc-python-sdk packagegroup-core-boot kernel-modules nano"' >> ./conf/local.conf
+echo -e '\nIMAGE_INSTALL += " iotc-telemetry-demo-dev packagegroup-core-boot kernel-modules nano"' >> ./conf/local.conf
 
 # Config to build as fast as we can
 echo -e '\nBB_NUMBER_THREADS = "${@oe.utils.cpu_count()}"\nPARALLEL_MAKE = "-j ${@oe.utils.cpu_count()}"' >> ./conf/local.conf
