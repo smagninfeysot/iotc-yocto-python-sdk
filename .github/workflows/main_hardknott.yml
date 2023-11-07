@@ -47,3 +47,4 @@ jobs:
             path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.qemuboot.conf
 
       - run: rm -rf out # clean
+      - run: rm -rf /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*
