@@ -53,6 +53,38 @@ As developing a iotc application involves the use of private/secure data like ke
 
 This approach allows the user to develop their solution conveniently, then when it's time to provide production builds, the result would be a clean installation awaiting first time configuration post image flash.
 
+## Commands
+This demo supports commands to be sent from iotconnect.io to the device, both plain bash commands and commands execute through bash scripts are supported.
+bash scripts are placed in `meta-my-iotc-python-sdk-example/recipes-apps/iotc-telemetry-and-commands-demo/scripts`
+
+by default, the scripts folder is installed in
+`/usr/bin/local/iotc/scripts`
+Make sure this path is added to the `commands_list_path` in your json configuration.
+
+Two example scripts are included `control_led.sh` and `get_mem_usage.sh`, `control_led.sh` is used to show how a user may want to control an led on an embedded device. 
+This is done by writing a 0/1 value to the led's path (update led_path inside control_led.sh), the output of the command is shown on the cloud dashboard, so it is recommended to use `exit 1` and piping messages to stderr through `>&2 echo` so that error messages are sent to the dashboard correctly.
+
+Adding more commands is possible by adding more scripts to the scripts folder.
+
+You will need to modify your device template to add commands if you haven't already done so.
+
+The first command you need to add is `exec`
+`Command Name:` `exec`
+`Command:` `exec`
+`Parameter Required: Toggled On`
+`Receipt Required: Toggled On`
+
+Once added, this will allow you to execute bash commands on the device, executing commands from the scripts folder can be done by sending an `exec` command with the parameter being the script name and any arguments that the script needs, for example `exec control_led.sh 1` would turn on the led.
+
+If you are happy with the command, you create a new command to save time of writing out the full command every time it's run.
+Eg.
+`Command Name:` `Control Led`
+`Command:` `control_led.sh` <--- Name of the command bash script
+`Parameter Required: Toggled On`
+`Receipt Required: Toggled On`
+
+Now you can send a command `Control Led` with parameters `0/1` and it will be interpreted as `exec control_led.sh 0/1`, making the commands more accessible to end users.
+
 ## Configuration JSONs
 One schema for a commerical iotc solution that uses a fleet of devices would be a single set of binaries that use individual config files to implement individual devices. This telemetry demo illustrates one way the user might achieve this.
 
