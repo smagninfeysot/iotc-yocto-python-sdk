@@ -68,7 +68,7 @@ clone iotc-yocto-c-sdk into `<basedir>/source`.
 
 Add both layers from iotc-yocto-python-sdk and iotc-yocto-c-sdk to the `bblayers.conf` file located in `build/01047/conf`
 
-add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
+add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-demo-dev"` to the bottom of `build/conf/local.conf`
 
 modify `meta-my-iotc-python-sdk-example/recipes-apps/iotc-python-sdk/files/iotconnect-sdk-1.0-firmware-python_msg-2_1.py` with your `SId` (hint where to find it is in current value of that variable), `uniqueId` (that's the unique id on iotc device creation). You might also want to add `"devicePrivateKey"` field to `SdkOptions` structure (also see comments above that structure. private key must be the same you provided on device creation on iotc).
 
@@ -83,7 +83,7 @@ clone iotc-yocto-python-sdk into `<basedir>/source`.
 
 Add both layers from iotc-yocto-python-sdk to the `bblayers.conf` file located in `build/01047/conf`
 
-add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-python-sdk"` to the bottom of `build/conf/local.conf`
+add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-demo-dev"` to the bottom of `build/conf/local.conf`
 
 navigate to `build/01047` and build your needed image.
 
