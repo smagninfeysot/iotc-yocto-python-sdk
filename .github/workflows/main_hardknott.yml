@@ -1,10 +1,6 @@
 name: Bitbake qemu hardknott image
 on:
   workflow_dispatch:
-  push:
-    branches: [ "master", "hardknott" ] #adjust as needed
-  pull_request:
-    branches: [ "master", "hardknott" ] #adjust as needed
 
 jobs:
   spawn-build-container:
