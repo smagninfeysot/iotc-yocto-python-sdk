@@ -32,19 +32,19 @@ jobs:
     #       runqemu qemux86-64 slirp nographic
     #     shell: bash
       - name: upload artefact
-      - uses: actions/upload-artifact@v3
-        with:
-            name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
-            path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.rootfs.ext4
-
-      - uses: actions/upload-artifact@v3
-        with:
-            name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
-            path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.bin
-
-      - uses: actions/upload-artifact@v3
-        with:
-            name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
-            path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.qemuboot.conf
+        - uses: actions/upload-artifact@v3
+          with:
+              name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
+              path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.rootfs.ext4
+  
+        - uses: actions/upload-artifact@v3
+          with:
+              name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
+              path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.bin
+  
+        - uses: actions/upload-artifact@v3
+          with:
+              name: rootfs-${{ steps.date.outputs.builddate }}-${{ github.sha }}
+              path: /mnt/resource/hardknott/tmp/deploy/images/qemux86-64/*.qemuboot.conf
 
       - run: rm -rf out # clean
