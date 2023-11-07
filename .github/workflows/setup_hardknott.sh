@@ -41,5 +41,5 @@ echo -e '\nBB_NUMBER_THREADS = "${@oe.utils.cpu_count()}"\nPARALLEL_MAKE = "-j $
 CACHE_PATH="/mnt/resource/hardknott/"
 echo "DL_DIR     = \"${CACHE_PATH}downloads\""        >> conf/local.conf
 echo "SSTATE_DIR = \"${CACHE_PATH}sstate-cache\""     >> conf/local.conf
-#echo "TMPDIR     = \"${CACHE_PATH}tmp\""              >> conf/local.conf
+echo "TMPDIR     = \"${CACHE_PATH}tmp\""              >> conf/local.conf
 
