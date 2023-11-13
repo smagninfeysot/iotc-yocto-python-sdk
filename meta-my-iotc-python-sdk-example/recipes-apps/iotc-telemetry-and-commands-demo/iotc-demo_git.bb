@@ -7,7 +7,6 @@ SRC_URI = "file://iotc-demo.py \
     file://model \
     file://eg-private-repo-data \
     file://scripts \
-    file://certs \
 "
 
 APP_INSTALL_DIR = "${base_prefix}/usr/bin/local/iotc"
