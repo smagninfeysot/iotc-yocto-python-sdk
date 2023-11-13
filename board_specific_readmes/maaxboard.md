@@ -7,29 +7,29 @@ In this MaaXBoard Example, developers are guided on how to integrate the `meta-i
 	* Tested on Ubuntu 20.04 without issue.
 
 The final directory structure is shown below:
-```bash
-$ tree -L 2 imx-yocto-bsp/
-imx-yocto-bsp/
-├── maaxboard
-│   └── build
-└── sources
-    ├── base
-    ├── meta-browser
-    ├── meta-clang
-    ├── meta-freescale
-    ├── meta-freescale-3rdparty
-    ├── meta-freescale-distro
-    ├── meta-imx
-    ├── meta-iotconnect
-    ├── meta-maaxboard
-    ├── meta-myExampleIotconnectLayer
-    ├── meta-nxp-demo-experience
-    ├── meta-openembedded
-    ├── meta-python2
-    ├── meta-qt5
-    ├── meta-timesys
-    └── poky
-```
+   ```bash
+   $ tree -L 2 imx-yocto-bsp/
+   imx-yocto-bsp/
+   ├── maaxboard
+   │   └── build
+   └── sources
+      ├── base
+      ├── meta-browser
+      ├── meta-clang
+      ├── meta-freescale
+      ├── meta-freescale-3rdparty
+      ├── meta-freescale-distro
+      ├── meta-imx
+      ├── meta-iotconnect
+      ├── meta-maaxboard
+      ├── meta-myExampleIotconnectLayer
+      ├── meta-nxp-demo-experience
+      ├── meta-openembedded
+      ├── meta-python2
+      ├── meta-qt5
+      ├── meta-timesys
+      └── poky
+   ```
 
 1. Install required packages
    ```bash
@@ -59,13 +59,6 @@ All instructions will take place from the `imx-yocto-bsp` directory unless state
    ```bash
    git clone https://github.com/Avnet/meta-maaxboard.git -b hardknott sources/meta-maaxboard
    ```
-1. Agree to the license
-   ```bash
-   mkdir imx8mqevk && \
-   DISTRO=fsl-imx-wayland MACHINE=imx8mqevk source imx-setup-release.sh -b imx8mqevk && \
-   cd .. && \
-   rm -rf imx8mqevk
-   ```
 1. Download this repo
    ```bash
    wget https://github.com/avnet-iotconnect/iotc-yocto-python-sdk/archive/refs/heads/hardknott.zip && \
@@ -73,31 +66,28 @@ All instructions will take place from the `imx-yocto-bsp` directory unless state
    mv sources/iotc-yocto-python-sdk-hardknott/meta-* sources/ && \
    rm -r hardknott.zip sources/iotc-yocto-python-sdk-hardknott/
    ```
-1. Configure the build
+1. Configure the build (Note you will have to do this only for the first time setup, running the  command again will delete your local configuration)
    ```bash
-   mkdir -p maaxboard/build && \
+   MACHINE=maaxboard source sources/meta-maaxboard/tools/maaxboard-setup.sh -b maaxboard/build
+   ```
+1. Initialise the Bitbake environment (Only if you need to do so again after completing the previous step)
+   ```bash
    source sources/poky/oe-init-build-env maaxboard/build
-   ```
-From the `imx-yocto-bsp/maaxboard/build` directory (which you should be in from the previous stage)
-1. Use the build configuration templates from the MaaxBoard layer
-   ```bash
-   mkdir -p conf
-   cp ../../sources/meta-maaxboard/conf/local.conf.sample ./conf/local.conf && \
-   cp ../../sources/meta-maaxboard/conf/bblayers.conf.sample ./conf/bblayers.conf
-   ```
+   ``` 
+
 1. Edit build configuration to include these layers
    ```bash
    echo -e '\nBBLAYERS += "${BSPDIR}/sources/meta-iotc-python-sdk"' >> conf/bblayers.conf && \
-   echo 'BBLAYERS += "${BSPDIR}/sources/meta-my-iotc-python-sdk-example"' >> conf/bblayers.conf
+   echo -e '\nBBLAYERS += "${BSPDIR}/sources/meta-my-iotc-python-sdk-example"' >> conf/bblayers.conf
    ```
 
 1. Add the IoTConnect Python SDK to `build/conf/local` image
-```bash
-   echo -e '\nIMAGE_INSTALL += " iotc-telemetry-demo"' >> maaxboard/build/conf/local.conf 
-```
+   ```bash
+   echo -e '\nIMAGE_INSTALL += " iotc-demo-dev packagegroup-core-boot kernel-modules"' >> conf/local.conf 
+   ```
 1. build!
    ```bash
-   bitbake <your-image-name>
+   bitbake core-image-base
    ```
 ### Testing
 
@@ -108,16 +98,24 @@ If you haven't already added a user, you can add the default user `root` with pa
 from the `imx-yocto-bsp` directory
 
    ```bash
-echo -e '\nEXTRA_IMAGE_FEATURES=""
-INHERIT += "extrausers"
-EXTRA_USERS_PARAMS = "\ 
-\tusermod -P avnet root; \ 
-"' >> maaxboard/build/conf/local.conf 
+   echo -e '\nEXTRA_IMAGE_FEATURES=""
+   INHERIT += "extrausers"
+   EXTRA_USERS_PARAMS = "\ 
+   \tusermod -P avnet root; \ 
+   "' >> conf/local.conf 
    ```
 
-***NOTE: You will need to add your device to IoTConnect and modify the `test.py` to add your device's credentials before running the test script  ***
+```bash
+# Include systemd to your `local.conf`
+echo -e '\nDISTRO_FEATURES_append = " systemd"\nDISTRO_FEATURES_BACKFILL_CONSIDERED += " sysvinit"\nVIRTUAL-RUNTIME_init_manager = " systemd"\nVIRTUAL-RUNTIME_initscripts = " systemd-compat-units"\n' >> /conf/local.conf
+```
+
+If you are using X509 certs make sure to add the certificates to your example layer before building in
+`meta-my-iotc-python-sdk-example/recipes-apps/iotc-telemetry-and-commands-demo/files/certs`
+
+Make sure to create your own `config.json` based off the examples in `meta-my-iotc-python-sdk-example/recipes-apps/iotc-telemetry-and-commands-demo/files/eg-private-repo-data` (place `config.json` in the same directory as the examples)
 
 To run the test from `meta-my-iotc-python-sdk-example`, use the following command after connecting to the board
-```bash
-python3 /usr/bin/iotc/test.py 
-```
+   ```bash
+   /usr/bin/local/iotc/iotc-demo.py /usr/local/iotc/config.json
+   ```

@@ -65,7 +65,7 @@ rm -r hardknott.zip .tmp/ && \
 cd build && \
 bitbake-layers add-layer ../meta-iotc-python-sdk/ && \
 bitbake-layers add-layer ../meta-my-iotc-python-sdk-example/ && \
-echo -e '\nIMAGE_INSTALL += "iotc-telemetry-demo packagegroup-core-boot kernel-modules nano"' >> ./conf/local.conf 
+echo -e '\nIMAGE_INSTALL += "iotc-demo-dev packagegroup-core-boot kernel-modules nano"' >> ./conf/local.conf 
 ```
 
 # Build
