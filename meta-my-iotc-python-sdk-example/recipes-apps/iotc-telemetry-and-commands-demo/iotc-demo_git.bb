@@ -39,17 +39,6 @@ do_install() {
         fi
     done
 
-    # Add certs folder
-    for f in ${WORKDIR}/certs/*
-    do
-        if [ -f $f ]; then
-            if [ ! -d ${D}${APP_INSTALL_DIR}/certs ]; then
-                install -d ${D}${APP_INSTALL_DIR}/certs
-            fi
-            install -m 0755 $f ${D}${APP_INSTALL_DIR}/certs/
-        fi
-    done
-
     # Install main app
     install -m 0755 ${WORKDIR}/iotc-demo.py ${D}${APP_INSTALL_DIR}/
 
