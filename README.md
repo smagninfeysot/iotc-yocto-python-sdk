@@ -32,10 +32,9 @@ meta-my-iotc-python-sdk-example/
 └── recipes-apps
     └── iotc-telemetry-and-commands-demo        <--------- Recipe directory
         ├── files
-        │   ├── eg-private-repo-data            <--------- Location for config data for development purposes.
+        │   ├── eg-private-repo-data            <--------- Location for config & certificate data for development purposes.
         │   │   ├── configSymmrcKy.json
         │   │   └── configX509.json
-        │   ├── certs                           <--------- Location for authentication certificates (X509)
         │   ├── model                           <--------- Directory of support sources
         │   │   ├── device_model.py
         │   │   ├── enums.py
