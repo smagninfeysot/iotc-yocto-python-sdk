@@ -42,15 +42,10 @@ do_install() {
     # Install main app
     install -m 0755 ${WORKDIR}/iotc-demo.py ${D}${APP_INSTALL_DIR}/
 
-    for f in ${WORKDIR}/eg-private-repo-data/*
-    do
-        if [ -f $f ]; then
-            if [ ! -d ${D}${PRIVATE_DATA_DIR} ]; then
-                install -d ${D}${PRIVATE_DATA_DIR}
-            fi
-            install -m 0755 $f ${D}${PRIVATE_DATA_DIR}/
-        fi
-    done
+    if [ ! -d ${D}${PRIVATE_DATA_DIR} ]; then
+        install -d ${D}${PRIVATE_DATA_DIR}
+    fi
+    cp -R --no-preserve=ownership ${WORKDIR}/eg-private-repo-data/* ${D}${PRIVATE_DATA_DIR}/
 
     # Add dummy sensor files
     echo 1 > ${D}${APP_INSTALL_DIR}/dummy_sensor_power
