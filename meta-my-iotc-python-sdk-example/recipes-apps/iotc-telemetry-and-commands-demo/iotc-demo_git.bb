@@ -1,7 +1,8 @@
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec6d293b95dea7b07891"
 
-RDEPENDS_${PN} = "iotc-python-sdk bash iotc-demo-service"
+DEPENDS = "iotc-demo-service"
+RDEPENDS_${PN} = "iotc-python-sdk bash"
 
 SRC_URI = "file://iotc-demo.py \
     file://model \

@@ -11,6 +11,7 @@ SYSTEMD_AUTO_ENABLE_${PN} = "enable"
 SYSTEMD_SERVICE_${PN} = "iotc-set-perms.service"
 
 SRC_URI += "file://iotc-set-perms.service \
+    file://iotc-demo.patch \
 "
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
