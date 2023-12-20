@@ -166,28 +166,28 @@ class JsonDevice(ConnectedDevice):
 
     def device_cb(self,msg):
         # Only handles messages with E.Values.Commands.DEVICE_COMMAND (also known as CMDTYPE["DCOMM"])
-        full_command = E.get_value(msg, E.Keys.device_command)
-        command: list = full_command.split(' ')
-        enum_command = self.DeviceCommands.get(command[0])
+        command: list = E.get_value(msg, E.Keys.device_command).split(' ')
         
         # If you need to implement other hardcoded commands
         # add the command name to the DeviceCommands enum
-        # and check against it here (see the EXEC command below)
+        # and check against it here (see the comment below)
 
-        # Execute bash scripts or bash commands that use exec
-        if enum_command == self.DeviceCommands.EXEC:
-            command.pop(0) #remove "exec" element
+        # enum_command = self.DeviceCommands.get(command[0])
+        # if enum_command == self.DeviceCommands.EXAMPLE:
+        #     do something
 
         # if command exists in scripts folder append the folder path
         if command[0] in self.scripts:
             command[0] = self.SCRIPTS_PATH + command[0]
 
-        process = subprocess.run(command, check=False, capture_output=True)
-        process_success:bool = (process.returncode == 0)
+            process = subprocess.run(command, check=False, capture_output=True)
+            process_success:bool = (process.returncode == 0)
 
-        ack = E.Values.AckStat.SUCCESS if process_success else E.Values.AckStat.FAIL
-        process_output: bytes = process.stdout if process_success else process.stderr
+            ack = E.Values.AckStat.SUCCESS if process_success else E.Values.AckStat.FAIL
+            process_output: bytes = process.stdout if process_success else process.stderr
         
-        ack_message = str(process_output, 'UTF-8')
-        self.send_ack(msg,ack, ack_message)
+            ack_message = str(process_output, 'UTF-8')
+            self.send_ack(msg,ack, ack_message)
+
+        self.send_ack(msg,E.Values.AckStat.FAIL, f"Command {command[0]} does not exist")
 
