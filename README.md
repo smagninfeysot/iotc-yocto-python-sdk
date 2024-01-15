@@ -15,43 +15,76 @@ meta-iotc-python-sdk/
 │   └── layer.conf
 └── recipes-apps
     └── iotc-python-sdk
-        ├── iotc-python-sdk_0.1.bb
-        └── jsonlib-python3_1.6.1.bb
+        ├── python3-iotconnect-sdk_0.1.bb
+        └── python3-jsonlib_1.6.1.bb
 ```
 
 ### `meta-my-iotc-python-sdk-example`
-This layer provides an example of how a user might write a recipe suitable for their application. It contains a simple application that demonstrates telemetry. Once installed on the image it can be started by logging in & executing `/usr/bin/local/iotc/telemetry-demo.py /path/to/config.json` where `config.json` is a file that contains device authentication information and paths to where telemetry-demo will read data from on the host device. It's expected that in the 1st instance a user would run this demo on their hardware after editing a sample `config.json` to reflect a device they've defined on avnet.iotconnect.io and sensor data particular to their hardware.
+This layer provides an example of how a user might write a recipe suitable for their application. It contains a simple application that demonstrates telemetry and commands. Once installed on the image it can be started by logging in & executing `/usr/bin/local/iotc/iotc-demo.py /path/to/config.json` where `config.json` is a file that contains device authentication information and paths to where demo will read data from on the host device. It's expected that in the 1st instance a user would run this demo on their hardware after editing a sample `config.json` to reflect a device they've defined on avnet.iotconnect.io and sensor data particular to their hardware.
 
-By adding the recipe to your image (e.g. `IMAGE_INSTALL += " iotc-telemetry-demo"` in `conf/local.conf`) you will via dependancy include `iotc-python-sdk` from `meta-iotc-python-sdk`
+As developing a iotc application involves the use of private/secure data like keys/certificates and the user is expected to develop same application using SCM like git, it's worth taking a moment to be aware of risks of accidentally uploading private data to places it should not belong.
+
+The directory `eg-private-repo-data` seeks to provide a safe space to place sensitive data like device keys etc __for development purposes only__. When the user installs the _development_ version of the recipe (e.g. `IMAGE_INSTALL += " iotc-demo-dev"` in `conf/local.conf`) any files or directoires within `eg-private-repo-data` will be installed in the rootfs of the image. The `.gitignore` settings for this repo are also configured to prevent accidental upload of *.pem or *.crt files.
+
+This approach allows the user to develop their solution conveniently, then when it's time to provide production builds, the result would be a clean installation awaiting first time configuration post image flash. E.g. An engineer would develop an application to the point of production release using `iotc-demo-dev`. The application that's released to production is built using the `iotc-demo` recipe. Hence there could be a high number (100?) of "blank" devices containing all the binaries necessary to perform just requiring provisioning with the config.jsons.
+
+By adding the recipe to your image (e.g. `IMAGE_INSTALL += " iotc-demo-dev"` in `conf/local.conf`) you will via dependency include `iotc-python-sdk` from `meta-iotc-python-sdk`
 
 ```
 iotc-yocto-python-sdk$ tree meta-my-iotc-python-sdk-example/
 meta-my-iotc-python-sdk-example/
 ├── conf
 │   └── layer.conf
-├── recipes-apps
-│   └── iotc-telemetry-demo <------------------ Recipe directory
-│       ├── files
-│       │   ├── eg-private-repo-data <--------- Location for certificates/keys & other config data for development purposes.
-│       │   │   ├── configSymmrcKy.json
-│       │   │   ├── configX509.json
-│       │   ├── model <------------------------ directory of support sources
-│       │   │   ├── DeviceModel.py
-│       │   │   ├── Enums.py
-│       │   │   ├── JsonDevice.py
-│       │   │   └── JsonParser.py
-│       │   └── telemetry_demo.py <------------ top level python source.
-│       └── iotc-telemetry-demo_0.1.bb <------- Recipe
-└── recipes-systemd
-    └── iotc-telemetry-demo-service <---------- Example of a systemd service designed to start telemtry on boot (disabled by default)
+└── recipes-apps
+    └── iotc-telemetry-and-commands-demo        <--------- Recipe directory
         ├── files
-        │   └── iotc-telemetry-demo.service
-        └── iotc-telemetry-demo-service_git.bb
+        │   ├── eg-private-repo-data            <--------- Location for config & certificate data for development purposes.
+        │   │   ├── configSymmrcKy.json
+        │   │   └── configX509.json
+        │   ├── model                           <--------- Directory of support sources
+        │   │   ├── device_model.py
+        │   │   ├── enums.py
+        │   │   ├── json_device.py
+        │   │   └── json_parser.py
+        │   ├── scripts                         <--------- Directory of scripts that can be execute from iotconnect.io
+        │   │   ├── control_led.sh
+        │   │   └── get_mem_usage.sh
+        │   ├── iotc-demo.service               <--------- Example systemd service (disabled by default)
+        │   └── iotc-demo.py                    <--------- Top level python source.
+        └── iotc-demo_git.bb                    <--------- Recipe
 ```
 
-As developing a iotc application involves the use of private/secure data like keys/certificates and the user is expected to develop same application using SCM like git, it's worth taking a moment to be aware of risks of accidentlally uploading private data to places it should not belong. The directory `eg-priviate-repo-data` seeks to provide a safe space to place sensitive data like device keys etc for development purposes only. When the user installs the _development_ version of the recipe (e.g. `IMAGE_INSTALL += " iotc-telemetry-demo-dev"` in `conf/local.conf`) any files within `eg-private-repo-data` will be installed in the rootfs of the image. The `.gitignore` settings for this repo are also configured to prevent accidental upload of *.pem or *.crt files.
+## Commands
+This demo supports commands to be sent from iotconnect.io to the device, both plain bash commands and commands execute through bash scripts are supported.
+bash scripts are placed in `meta-my-iotc-python-sdk-example/recipes-apps/iotc-telemetry-and-commands-demo/scripts`
 
-This approach allows the user to develop their solution conveniently, then when it's time to provide production builds, the result would be a clean installation awaiting first time configuration post image flash.
+by default, the scripts folder is installed in
+`/usr/bin/local/iotc/scripts`
+Make sure this path is added to the `commands_list_path` in your json configuration.
+
+Two example scripts are included `control_led.sh` and `get_mem_usage.sh`, `control_led.sh` is used to show how a user may want to control an led on an embedded device. 
+This is done by writing a 0/1 value to the led's path (update led_path inside control_led.sh), the output of the command is shown on the cloud dashboard, so it is recommended to use `exit 1` and piping messages to stderr through `>&2 echo` so that error messages are sent to the dashboard correctly.
+
+Adding more commands is possible by adding more scripts to the scripts folder.
+
+You will need to modify your device template to add commands if you haven't already done so.
+
+The first command you need to add is `exec`
+`Command Name:` `exec`
+`Command:` `exec`
+`Parameter Required: Toggled On`
+`Receipt Required: Toggled On`
+
+Once added, this will allow you to execute bash commands on the device, executing commands from the scripts folder can be done by sending an `exec` command with the parameter being the script name and any arguments that the script needs, for example `exec control_led.sh 1` would turn on the led.
+
+If you are happy with the command, you create a new command to save time of writing out the full command every time it's run.
+Eg.
+`Command Name:` `Control Led`
+`Command:` `control_led.sh` <--- Name of the command bash script
+`Parameter Required: Toggled On`
+`Receipt Required: Toggled On`
+
+Now you can send a command `Control Led` with parameters `0/1` and it will be interpreted as `exec control_led.sh 0/1`, making the commands more accessible to end users.
 
 ## Configuration JSONs
 One schema for a commerical iotc solution that uses a fleet of devices would be a single set of binaries that use individual config files to implement individual devices. This telemetry demo illustrates one way the user might achieve this.
@@ -169,11 +202,12 @@ To include the layers within a yocto environment:
 
 1. check them out to the `sources` directory in your yocto environment. 
 1. add them to `conf/bblayers` file in your build directory
-1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-telemetry-demo-dev"` to the bottom of `build/conf/local.conf`
+1. add the recipes to your build target e.g. add `IMAGE_INSTALL += " iotc-demo-dev"` to the bottom of `build/conf/local.conf`
 1. using the config.json files in `eg-private-repo-data` as a template, create your own config.json with details of the device you have setup on iotconnect.io.
-1. editing the same json as in the last step, edit the `attributes` section of the JSON so the `name` of the attritube maps to a path on your system where the relevant data can be found e.g. the path to the position data of an I2C accelerometer might be: `/sys/bus/i2c/devices/1-0053/position`.
+1. editing the same json as in the last step, edit the `attributes` section of the JSON so the `name` of the attribute maps to a path on your system where the relevant data can be found e.g. the path to the position data of an I2C accelerometer might be: `/sys/bus/i2c/devices/1-0053/position`.
 1. build with a bitbake call e.g. `./bitbake core-image-base`
 1. Flash the resultant image to the device.
-1. Login into the device & run the command `/usr/bin/local/iotc/telemetry-demo.py /usr/local/iotc/config.json`
+1. Login into the device & run the command `/usr/bin/local/iotc/iotc-demo.py /usr/local/iotc/config.json`
 
 ## Board specific examples can be found [here](board_specific_readmes/README.md)
+

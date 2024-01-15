@@ -1,0 +1,19 @@
+Index: b/iotc-demo.service
+===================================================================
+--- a/iotc-demo.service
++++ b/iotc-demo.service
+@@ -5,10 +5,12 @@ Wants=network-online.target
+ 
+ [Service]
+ Type=simple
++User=iot
++Group=iot
+ ExecStart=/usr/bin/python3 -u /usr/bin/local/iotc/iotc-demo.py /usr/local/iotc/config.json
+ Restart=always
+ StandardOutput=journal+console
+ StandardError=journal+console
+ 
+ [Install]
+-WantedBy=multi-user.target
+\ No newline at end of file
++WantedBy=multi-user.target
