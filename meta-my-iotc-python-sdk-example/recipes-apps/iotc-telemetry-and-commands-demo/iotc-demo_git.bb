@@ -8,6 +8,8 @@ SRC_URI = "file://iotc-demo.py \
     file://model \
     file://eg-private-repo-data \
     file://scripts \
+    file://certs \
+    file://iotc-application.sh \
 "
 
 APP_INSTALL_DIR = "${base_prefix}/usr/bin/local/iotc"
@@ -15,6 +17,9 @@ PRIVATE_DATA_DIR = "${base_prefix}/usr/local/iotc"
 
 FILES_${PN}-dev = "${PRIVATE_DATA_DIR}/* \
 "
+
+FILES_${PN} +=  "${ROOT_HOME}/ " \
+                "${ROOT_HOME}/iotc-application.sh "
 
 do_install() {
     install -d ${D}${APP_INSTALL_DIR}
@@ -39,8 +44,22 @@ do_install() {
         fi
     done
 
+    # Add certs folder
+    for f in ${WORKDIR}/certs/*
+    do
+        if [ -f $f ]; then
+            if [ ! -d ${D}${APP_INSTALL_DIR}/certs ]; then
+                install -d ${D}${APP_INSTALL_DIR}/certs
+            fi
+            install -m 0755 $f ${D}${APP_INSTALL_DIR}/certs/
+        fi
+    done
+
     # Install main app
     install -m 0755 ${WORKDIR}/iotc-demo.py ${D}${APP_INSTALL_DIR}/
+
+    install -d ${D}/${ROOT_HOME}/
+    install -m 0755 ${WORKDIR}/iotc-application.sh ${D}${ROOT_HOME}
 
     if [ ! -d ${D}${PRIVATE_DATA_DIR} ]; then
         install -d ${D}${PRIVATE_DATA_DIR}
