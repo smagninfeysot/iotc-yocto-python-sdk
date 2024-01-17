@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/root iotc-application.sh
+ExecStart=/home/root/iotc-application.sh
 Restart=always
 StandardOutput=journal+console
 StandardError=journal+console
