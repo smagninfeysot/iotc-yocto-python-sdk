@@ -37,6 +37,9 @@ class OtaHandler:
         self.device = connected_device
         self.device.in_ota = True
         self.device.needs_exit = False
+
+        if not os.path.exists(OTA_LOG_DIRECTORY):
+            os.mkdir(OTA_LOG_DIRECTORY)
         
         logging.basicConfig(filename= OTA_LOG_DIRECTORY + self.now() + "-" + "ota.log",
                     filemode='a',
