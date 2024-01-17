@@ -191,6 +191,7 @@ class JsonDevice(ConnectedDevice):
         
             ack_message = str(process_output, 'UTF-8')
             self.send_ack(msg,ack, ack_message)
+            return
 
         self.send_ack(msg,E.Values.AckStat.FAIL, f"Command {command[0]} does not exist")
 
