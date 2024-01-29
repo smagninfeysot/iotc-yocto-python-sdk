@@ -8,7 +8,6 @@ from model.device_model import ConnectedDevice
 from model.json_parser import parse_json_for_config, ToSDK
 from model.enums import Enums as E
 
-
 class DynAttr:
 
     name = None
@@ -157,6 +156,10 @@ class JsonDevice(ConnectedDevice):
         '''Overrideable - return dictionary of local data to send to the cloud'''
         #print("no class-defined object properties")
         return {}
+
+    def ota_cb(self,msg):
+        from model.ota_handler import OtaHandler
+        OtaHandler(self,msg)
     
     def get_all_scripts(self):
         if not self.SCRIPTS_PATH.endswith('/'):
@@ -188,6 +191,7 @@ class JsonDevice(ConnectedDevice):
         
             ack_message = str(process_output, 'UTF-8')
             self.send_ack(msg,ack, ack_message)
+            return
 
         self.send_ack(msg,E.Values.AckStat.FAIL, f"Command {command[0]} does not exist")
 
