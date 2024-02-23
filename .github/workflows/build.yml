@@ -2,9 +2,7 @@ name: build
 
 on:
   pull_request:
-    paths:
-      - ".github/workflows/job_build.yml"
-      - "ci-scripts/"
+  workflow_dispatch:
 jobs:
 #  start-self-hosted-runner:
 #    runs-on: ubuntu-latest
